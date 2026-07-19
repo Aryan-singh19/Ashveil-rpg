@@ -1,0 +1,6 @@
+{
+  "name": "Ashveil RPG",
+  "description": "A rich, tactical browser-based rogue-lite RPG centered around the dark siege of Ashveil castle, featuring dynamic procedural maps and audio synthesis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

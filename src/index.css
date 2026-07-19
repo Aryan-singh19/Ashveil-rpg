@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Playfair Display", Georgia, serif;
+}
+
+/* Beautiful custom RPG game animations */
+@keyframes floatDmg {
+  0% {
+    transform: translate(-50%, 0) scale(0.4) rotate(-15deg);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-30%, -100px) scale(1.3) rotate(5deg);
+    opacity: 1;
+  }
+  35% {
+    transform: translate(-10%, -50px) scale(1.0) rotate(-5deg);
+  }
+  55% {
+    transform: translate(10%, -85px) scale(1.0) rotate(2deg);
+  }
+  75% {
+    transform: translate(25%, -70px) scale(0.9) rotate(-2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(40%, -10px) scale(0.75) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+@keyframes floatIdle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes walkBob {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(0.96);
+  }
+}
+
+@keyframes lungeRight {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(45px) scale(1.1);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes lungeLeft {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(-45px) scale(1.1);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes walkInPlayer {
+  0% { transform: translateX(-150px) scale(0.6); opacity: 0; }
+  75% { transform: translateX(20px) scale(1.08); opacity: 1; }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes walkInEnemy {
+  0% { transform: translateX(150px) scale(0.6); opacity: 0; }
+  75% { transform: translateX(-20px) scale(1.08); opacity: 1; }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes swordSwingArc {
+  0% { transform: rotate(-60deg) scale(0.5); opacity: 0.2; }
+  40% { transform: rotate(45deg) scale(1.2); opacity: 1; }
+  100% { transform: rotate(90deg) scale(0.8); opacity: 0; }
+}
+
+@keyframes swordSlashArc {
+  0% { stroke-dashoffset: 200; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(8deg) skewX(4deg); }
+}
+
+@keyframes hurtShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+@keyframes deathFade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(12px);
+    filter: brightness(0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+@keyframes hitFlash {
+  0% { background: rgba(224, 86, 86, 0.7); }
+  100% { background: transparent; }
+}
+
+.animate-floatDmg {
+  animation: floatDmg 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
