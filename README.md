@@ -20,6 +20,8 @@ Ashveil Castle was once the glowing beacon of the northern borders. Three days a
 
 ## 🛠️ Features
 
+*   **Optimized 3D Diorama View:** Smooth toggle between classic Retro 2D grid and an atmospheric 3D isometric perspective. Engineered with a lifted virtual camera perspective and fine-tuned vertical/horizontal scaling offsets to ensure the entire dungeon is beautifully centered and completely visible.
+*   **The Chronicle of Ash (RPG Statistics):** Deep tracking of player conquests, including Enemies Defeated, Steps Taken, Secret Rifts Entered, Shrines Visited, Potions Consumed, and Gold Spent—visible as active HUD meters and detailed on the final summary screens.
 *   **Procedurally Generated Maps:** Each floor is procedurally carved with unique room structures, hidden items, locked chests, and portals.
 *   **Widescreen Responsive UI:** A beautifully polished desktop dashboard layout featuring rich status grids, active skill hotbars, interactive inventories, and real-time adventure chronicles.
 *   **Interactive NPC Dialogue:** Encounter various lost souls within the castle, engaging in branch-based storytelling to uncover the tragedy of King Aldric.

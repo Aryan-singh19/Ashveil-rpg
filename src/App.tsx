@@ -192,6 +192,14 @@ export default function AshveilRPG() {
   const [pathQueue, setPathQueue] = useState<[number, number][]>([]);
   const [combatIntro, setCombatIntro] = useState(false);
 
+  // "The Chronicle of Ash" - Active Run Conquest Statistics
+  const [statsKills, setStatsKills] = useState(0);
+  const [statsSteps, setStatsSteps] = useState(0);
+  const [statsSecretRooms, setStatsSecretRooms] = useState(0);
+  const [statsShrines, setStatsShrines] = useState(0);
+  const [statsGoldSpent, setStatsGoldSpent] = useState(0);
+  const [statsPotionsDrunk, setStatsPotionsDrunk] = useState(0);
+
   const logRef = useRef<HTMLDivElement>(null);
   const cls = selectedClass ? CLASSES[selectedClass] : null;
 
@@ -553,6 +561,12 @@ export default function AshveilRPG() {
     setVisited(new Set());
     setFloor(1);
     setUnlockedLore([]);
+    setStatsKills(0);
+    setStatsSteps(0);
+    setStatsSecretRooms(0);
+    setStatsShrines(0);
+    setStatsGoldSpent(0);
+    setStatsPotionsDrunk(0);
     setTimeout(() => reveal(data.startPos[0], data.startPos[1]), 0);
     setLog([
       `— ${FLOOR_META[1].name} —`, 
@@ -677,6 +691,7 @@ export default function AshveilRPG() {
     setTimeout(() => setPlayerAnim("idle"), 220);
     setPos([nx, ny]);
     reveal(nx, ny);
+    setStatsSteps((s) => s + 1);
 
     // Decrease Torch Fuel (Batch 2)
     setTorchFuel((f) => {
@@ -730,6 +745,7 @@ export default function AshveilRPG() {
     } else if (tile === "shrine") {
       sound.sfx.heal();
       doShake();
+      setStatsShrines((sh) => sh + 1);
       const shrineIndex = rand(3);
       if (shrineIndex === 0) {
         setActiveShrine({
@@ -791,6 +807,7 @@ export default function AshveilRPG() {
                   }
                   setTorchFuel((f) => Math.min(100, f + 35));
                   setKeyCount((k) => k + 1);
+                  setStatsGoldSpent((g) => g + 10);
                   pushLog("💧 You extinguish the burning ashes. The vapor flares and reveals a hidden brass key! +35% Torch Fuel, +1 Key.");
                   return { ...s, gold: s.gold - 10 };
                 });
@@ -887,6 +904,7 @@ export default function AshveilRPG() {
     } else if (tile === "portal") {
       fireTransition("Entering the rift...", "🌀", 800);
       sound.sfx.portal();
+      setStatsSecretRooms((sr) => sr + 1);
       setTimeout(() => {
         setMapData((md: any) => ({ ...md, savedPos: [nx, ny] }));
         setInSecret(true);
@@ -934,6 +952,7 @@ export default function AshveilRPG() {
     setPlayerAnim("walk");
     setTimeout(() => setPlayerAnim("idle"), 220);
     setPos([nx, ny]);
+    setStatsSteps((s) => s + 1);
 
     if (tile === "secret-item") {
       grantItem(mapData.secretRoom.item);
@@ -1069,6 +1088,7 @@ export default function AshveilRPG() {
   const resolveEnemyDeath = useCallback((enemyRef: Enemy) => {
     sound.sfx.hit();
     pushLog(`💀 The ${enemyRef.name} disintegrates into soot! (+${enemyRef.xp} XP, +${enemyRef.gold} Gold)`);
+    setStatsKills((k) => k + 1);
     addDamageNumber("SOOT DISPEL!", C.gold, true);
     
     // Reset combat-related statuses
@@ -1489,6 +1509,7 @@ export default function AshveilRPG() {
     if (item.type === "potion") {
       sound.sfx.heal();
       setStats((s) => s ? { ...s, hp: Math.min(s.maxHp, s.hp + (item.heal || 0)) } : null);
+      setStatsPotionsDrunk((p) => p + 1);
       pushLog(`🧪 You consume the [${item.name}]. Recovered +${item.heal} HP.`);
       setInventory((inv) => inv.filter((_, i) => i !== idx));
       setActionMenu("main");
@@ -1641,6 +1662,7 @@ export default function AshveilRPG() {
       } else {
         setInventory((inv) => [...inv, offer.item]);
       }
+      setStatsGoldSpent((g) => g + offer.cost);
       return { ...s, gold: s.gold - offer.cost };
     });
   }, [pushLog, sound]);
@@ -2913,17 +2935,40 @@ export default function AshveilRPG() {
 
                 <div
                   style={{
-                    fontSize: 11,
-                    color: C.boneDim,
+                    fontSize: 12,
+                    color: C.bone,
                     background: C.bg,
                     border: `1px solid ${C.border}`,
-                    borderRadius: 4,
-                    padding: "8px 12px",
-                    display: "inline-block",
-                    marginBottom: 20,
+                    borderRadius: 6,
+                    padding: "16px 20px",
+                    width: "100%",
+                    marginBottom: 24,
+                    textAlign: "left",
                   }}
                 >
-                  {cls.name} · Level {stats.level} · {stats.gold} Gold gathered
+                  <div
+                    style={{
+                      fontFamily: SERIF,
+                      fontSize: 14,
+                      color: screen === "victory" ? C.gold : C.bloodBright,
+                      borderBottom: `1px solid ${C.border}`,
+                      paddingBottom: 6,
+                      marginBottom: 10,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    📜 The Chronicle of Ash (Run Conquest)
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 16px", fontFamily: MONO, fontSize: 11, color: C.boneDim }}>
+                    <div>👤 Hero Class: <span style={{ color: C.bone }}>{cls.name}</span></div>
+                    <div>⭐ Level Reached: <span style={{ color: C.bone }}>{stats.level}</span></div>
+                    <div>⚔️ Enemies Slain: <span style={{ color: C.bone }}>{statsKills}</span></div>
+                    <div>👣 Steps Taken: <span style={{ color: C.bone }}>{statsSteps}</span></div>
+                    <div>🌀 Secret Rifts: <span style={{ color: C.bone }}>{statsSecretRooms}</span></div>
+                    <div>⛩️ Shrines Visited: <span style={{ color: C.bone }}>{statsShrines}</span></div>
+                    <div>🧪 Potions Drunk: <span style={{ color: C.bone }}>{statsPotionsDrunk}</span></div>
+                    <div>💰 Gold Spent: <span style={{ color: C.bone }}>{statsGoldSpent} Gold</span></div>
+                  </div>
                 </div>
 
                 <div>
@@ -3269,8 +3314,9 @@ export default function AshveilRPG() {
                             width: "100%",
                             overflow: threeDEnabled ? "visible" : "hidden",
                             perspective: "1200px",
+                            perspectiveOrigin: threeDEnabled ? "50% 30%" : "50% 50%",
                             transformStyle: "preserve-3d",
-                            transition: "padding 0.3s ease",
+                            transition: "all 0.3s ease",
                           }}
                         >
                           {/* Weather Particles overlay */}
@@ -3286,7 +3332,7 @@ export default function AshveilRPG() {
                               height: "100%",
                               transformStyle: "preserve-3d",
                               transform: threeDEnabled
-                                ? "rotateX(55deg) rotateZ(-45deg) scale3d(1.05, 1.05, 1.05)"
+                                ? "rotateX(53deg) rotateZ(-45deg) translateY(-14%) translateX(2%) scale3d(0.88, 0.88, 0.88)"
                                 : "none",
                               transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                             }}
@@ -4086,8 +4132,14 @@ export default function AshveilRPG() {
 
                     {/* INTERACTIVE LOGS */}
                     <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 10, flex: "1 1 0%" }}>
-                      <div style={{ fontSize: 10, color: C.boneDim, marginBottom: 5, letterSpacing: "0.05em" }}>
-                        SYSTEM CHRONICLE
+                      <div style={{ fontSize: 10, color: C.boneDim, marginBottom: 5, letterSpacing: "0.05em", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span>SYSTEM CHRONICLE</span>
+                        <span style={{ fontFamily: MONO, fontSize: 9, color: C.gold, display: "flex", gap: 8 }}>
+                          <span title="Enemies Defeated">⚔️ {statsKills}</span>
+                          <span title="Steps Taken">👣 {statsSteps}</span>
+                          <span title="Secret Rifts Entered">🌀 {statsSecretRooms}</span>
+                          <span title="Gold Spent">💰 {statsGoldSpent}</span>
+                        </span>
                       </div>
                       <div
                         ref={logRef}
@@ -4192,8 +4244,9 @@ export default function AshveilRPG() {
                               width: "100%",
                               overflow: threeDEnabled ? "visible" : "hidden",
                               perspective: "1200px",
+                              perspectiveOrigin: threeDEnabled ? "50% 30%" : "50% 50%",
                               transformStyle: "preserve-3d",
-                              transition: "padding 0.3s ease",
+                              transition: "all 0.3s ease",
                             }}
                           >
                             <ParticleSystem count={12} />
@@ -4206,7 +4259,7 @@ export default function AshveilRPG() {
                                 height: "100%",
                                 transformStyle: "preserve-3d",
                                 transform: threeDEnabled
-                                  ? "rotateX(55deg) rotateZ(-45deg) scale3d(1.05, 1.05, 1.05)"
+                                  ? "rotateX(53deg) rotateZ(-45deg) translateY(-14%) translateX(2%) scale3d(0.88, 0.88, 0.88)"
                                   : "none",
                                 transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                               }}
@@ -4410,6 +4463,31 @@ export default function AshveilRPG() {
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                           <span>Soot Gold:</span><span style={{ color: C.gold }}>{stats.gold}g</span>
+                        </div>
+                      </div>
+
+                      {/* CONQUEST RECORDS SUBSECTION */}
+                      <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 14, paddingTop: 12 }}>
+                        <div style={{ fontSize: 10, color: C.gold, marginBottom: 8, fontFamily: SERIF, fontWeight: "bold", letterSpacing: "0.05em" }}>⚔️ CONQUEST RECORDS</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 12px", fontSize: 10, fontFamily: MONO, color: C.boneDim }}>
+                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span>Kills:</span><span style={{ color: C.bone }}>{statsKills}</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span>Steps:</span><span style={{ color: C.bone }}>{statsSteps}</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span>Rifts:</span><span style={{ color: C.bone }}>{statsSecretRooms}</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span>Shrines:</span><span style={{ color: C.bone }}>{statsShrines}</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span>Potions:</span><span style={{ color: C.bone }}>{statsPotionsDrunk}</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <span>Spent:</span><span style={{ color: C.gold }}>{statsGoldSpent}g</span>
+                          </div>
                         </div>
                       </div>
                     </div>
